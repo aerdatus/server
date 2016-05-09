@@ -1,0 +1,5 @@
+node_modules
+*.pr
+*.gps
+*.csv
+logs/

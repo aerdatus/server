@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Proby</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <link href="css/main.css" rel="stylesheet">
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXgVF87h0s3c3Id1Co_xneo5D1eGK2tdQ"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="vendors/ExtDraggableObject.js"></script>
+
+  <script src="js/node.js"></script>
+  <script src="js/station.js"></script>
+  <script src="js/main.js"></script>
+</head>
+
+<body>
+  <div class="loader" style="display:none">
+    <div class="placeholder light">
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <div id="map-canvas"></div>
+
+  <div id="zoomContainer" style="position:absolute;top:25px;right:50px">
+    <div id="zoomIn" style="padding: 0px; margin:0px;position:absolute;top:0px;left:0px;overflow-x:hidden;overflow-y:hidden;background-image:url(images/mapcontrols3d5.png);background-repeat:no-repeat;width:24px;height:22px;cursor:pointer;background-position:-17px -65px;">&nbsp;</div>
+    <div id="zoomSlider" style="padding: 0px; margin:0px;position:absolute;top:22px;left:0px;overflow-x:hidden;overflow-y:hidden;background-image:url(images/mapcontrols3d5.png);background-repeat:no-repeat;width:24px;height:161px;cursor:pointer;background-position:-17px -87px;">&nbsp;
+      <div id="zoom" style="padding: 0px; margin: 0px; position: absolute; top: 88px; left: 2px; overflow: hidden; width: 20px; height: 12px; cursor: default; background-image: url(images/mapcontrols3d5.png); background-position: 0px -384px; background-repeat: no-repeat;">&nbsp;</div>
+    </div>
+    <div id="zoomOut" style="padding: 0px; margin:0px;position:absolute;top:183px;left:0px;overflow-x:hidden;overflow-y:hidden;background-image:url(images/mapcontrols3d5.png);background-repeat:no-repeat;width:24px;height:22px;cursor:pointer;background-position:-17px -360px;">&nbsp;</div>
+  </div>
+</body>
+
+</html>
