@@ -1,13 +1,13 @@
 var express = require('express'),
   os = require('os'),
   fs = require('fs'),
-  trilateration = require('trilateration'),
+  Trilateration = require('./lib/Trilateration'),
   MongoClient = require('mongodb').MongoClient,
   async = require('async');
 
 
 var mongo;
-
+var trilateration = new Trilateration();
 
 var port = process.env.PROBY_PORT || 1337;
 

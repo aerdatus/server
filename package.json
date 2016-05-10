@@ -21,6 +21,7 @@
   "homepage": "https://github.com/aerdatus/server#readme",
   "dependencies": {
     "async": "^1.5.2",
-    "mongodb": "^2.1.18"
+    "mongodb": "^2.1.18",
+    "express": "^4.13.4"
   }
 }
