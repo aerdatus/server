@@ -1,6 +1,6 @@
-var Signal = require('./lib/Signal');
+var SignalImporter = require('./lib/SignalImporter');
 
-var s = new Signal();
+var s = new SignalImporter();
 s.start(function() {
   process.exit(0);
 });
