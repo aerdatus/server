@@ -29,16 +29,16 @@ function hideAll(marker) {
 
   for (var y = 0; y < stationo.nodes.length; y++) {
     var node = stationo.nodes[y];
-    if (node.location.latitude && node.location.longitude) {
+    if (node.location.lat && node.location.lon) {
       var nodeG = new Node(node, './images/pcred.png', marker);
       nodeG.draw();
       nodeMarkers.push(nodeG.nodeMarker);
     }
   }
 
-  for (var y = 0; y < stationo.clients.length; y++) {
-    var node = stationo.clients[y];
-    if (node.location.latitude && node.location.longitude) {
+  for (var z = 0; z < stationo.clients.length; z++) {
+    var node = stationo.clients[z];
+    if (node.location.lat && node.location.lon) {
       var nodeG = new Node(node, './images/pcgreen.png', marker);
       nodeG.draw();
       nodeMarkers.push(nodeG.nodeMarker);
@@ -86,7 +86,7 @@ function initialize(mapOptions) {
         var stationG = new Station(station);
         stationG.draw();
 
-        stationMarkers[station.id] = stationG.stationMarker;
+        stationMarkers[station._id] = stationG.stationMarker;
       }
     }
 
@@ -148,7 +148,9 @@ function filter(zoomSlider) {
 
   for (var i = 0; i < nodeMarkers.length; i++) {
     var n = nodeMarkers[i];
-    n.line.setMap(null);
+    if(n.line) {
+      n.line.setMap(null);
+    }
     n.setMap(null);
   }
   nodeMarkers = [];
@@ -165,7 +167,7 @@ function start() {
   /*
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
-        mapOptions.center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        mapOptions.center = new google.maps.LatLng(position.coords.lat, position.coords.lon);
         initialize(mapOptions);
       });
     } else {

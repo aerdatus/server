@@ -78,10 +78,8 @@ function compute(station, callback) {
       }
     }
 
-    station.id = station._id;
-
-    var aux = findNodes(station, function(assoc) {
-      station.nodes = [];
+    var aux = findNodes(station, function(assoc, notassoc) {
+      station.nodes = notassoc;
       station.clients = assoc;
       callback(station);
     });
@@ -96,24 +94,28 @@ function findNodes(station, callback) {
   var outputassoc = [];
 
   mongo.collection('nodes').find({
-    $or: [{
-      probes: {
-        $elemMatch: {
-          $in: [station.name]
-        }
+    associated: {
+      $elemMatch: {
+        $in: [station._id]
       }
-    }, {
-      associated: {
-        $elemMatch: {
-          $in: [station._id]
-        }
-      }
-    }]
+    }
   }).each(function(err, doc) {
     if (doc) {
       outputassoc.push(doc);
     } else {
-      callback(outputassoc);
+      mongo.collection('nodes').find({
+        probes: {
+          $elemMatch: {
+            $in: [station.name]
+          }
+        }
+      }).each(function(err, doc) {
+        if (doc) {
+          outputnotassoc.push(doc);
+        } else {
+          callback(outputassoc, outputnotassoc);
+        }
+      });
     }
   });
 
