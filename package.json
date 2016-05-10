@@ -1,27 +1,29 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aerdatus/server.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/aerdatus/server/issues"
-  },
-  "homepage": "https://github.com/aerdatus/server#readme",
-  "dependencies": {
-    "async": "^1.5.2",
-    "mongodb": "^2.1.18",
-    "express": "^4.13.4"
-  }
+    "name": "server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "main.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aerdatus/server.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/aerdatus/server/issues"
+    },
+    "homepage": "https://github.com/aerdatus/server#readme",
+    "dependencies": {
+        "async": "^1.5.2",
+        "colors": "^1.1.2",
+        "express": "^4.13.4",
+        "gps-distance": "0.0.4",
+        "mongodb": "^2.1.18"
+    }
 }
