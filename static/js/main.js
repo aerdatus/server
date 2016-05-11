@@ -32,7 +32,7 @@ function hideAll(marker) {
     if (node.location.lat && node.location.lon) {
       var nodeG = new Node(node, './images/pcred.png', marker);
       nodeG.draw();
-      nodeMarkers.push(nodeG.nodeMarker);
+      nodeMarkers.push(nodeG);
     }
   }
 
@@ -41,7 +41,7 @@ function hideAll(marker) {
     if (node.location.lat && node.location.lon) {
       var nodeG = new Node(node, './images/pcgreen.png', marker);
       nodeG.draw();
-      nodeMarkers.push(nodeG.nodeMarker);
+      nodeMarkers.push(nodeG);
     }
   }
 
@@ -151,7 +151,7 @@ function filter(zoomSlider) {
     if(n.line) {
       n.line.setMap(null);
     }
-    n.setMap(null);
+    n.nodeMarker.setMap(null);
   }
   nodeMarkers = [];
 
