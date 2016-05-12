@@ -3,7 +3,9 @@ var express = require('express'),
   fs = require('fs'),
   Trilateration = require('./lib/Trilateration'),
   MongoClient = require('mongodb').MongoClient,
-  async = require('async');
+  async = require('async'),
+  bodyParser = require('body-parser'),
+  url = require('url');
 
 
 var mongo;
@@ -13,14 +15,33 @@ var port = process.env.PROBY_PORT || 1337;
 
 var app = express();
 app.use(express.static(__dirname + '/static'));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+app.use(bodyParser.json());
 
 var server = require('http').Server(app);
 
 var data = [];
 
 app.get('/info', function(req, res) {
+  var url_parts = url.parse(req.url, true);
+  var dataq = url_parts.query;
+
   var response = {};
-  mongo.collection('stations').find().each(function(err, doc) {
+  mongo.collection('stations').find({
+    $and: [{
+      'location.lon': {
+        "$gte": parseFloat(dataq.swlon),
+        "$lte": parseFloat(dataq.nelon)
+      }
+    }, {
+      'location.lat': {
+        "$gte": parseFloat(dataq.swlat),
+        "$lte": parseFloat(dataq.nelat)
+      }
+    }]
+  }).each(function(err, doc) {
     if (doc) {
       data.push(doc);
     } else {

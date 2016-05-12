@@ -8,6 +8,7 @@ var lines = [];
 var valFilter = 0;
 var openinfowindow;
 var bounds;
+var request = null;
 
 function hideAll(marker) {
   if (station) {
@@ -61,38 +62,9 @@ function hideAll(marker) {
 function initialize(mapOptions) {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-  google.maps.event.addListener(map, 'bounds_changed', function(e) {
-    var bounds = map.getBounds();
-    var ne = bounds.getNorthEast();
-    var sw = bounds.getSouthWest();
-    //console.log(ne.lat());
-    //console.log(ne.lng());
-    //console.log(sw);
+  google.maps.event.addListener(map, 'idle', function(e) {
+    loadData();
   });
-
-
-  $.get('/info', function(data) {
-    var stationIDs = Object.keys(data);
-
-    for (var i = 0; i < stationIDs.length; i++) {
-      var station = data[stationIDs[i]];
-
-      //console.log(station);
-
-      if (station.location.lat && station.location.lon && station.name !== 'FON_ZON_FREE_INTERNET' && station.name.indexOf('apocas') === -1 && station.name.indexOf('Wifi_BE8C') === -1 && station.name !== 'phobos' && station.name !== 'phobos4g' && station.name.indexOf('minedu') ===
-        -1 && station.name.indexOf('eduroam') === -1) {
-        //console.log(station);
-
-        var stationG = new Station(station);
-        stationG.draw();
-
-        stationMarkers[station._id] = stationG.stationMarker;
-      }
-    }
-
-    $('.loader').hide();
-  });
-
 
   var zoomSlider = new ExtDraggableObject(document.getElementById("zoom"), {
     restrictX: true,
@@ -102,6 +74,8 @@ function initialize(mapOptions) {
     container: document.getElementById("zoomSlider")
   });
   zoomSlider.setValueY(19);
+
+
 
   var dragEndEvent = google.maps.event.addListener(zoomSlider, "drag", function() {
     filter(zoomSlider);
@@ -114,6 +88,49 @@ function initialize(mapOptions) {
     zoomSlider.setValueY(zoomSlider.valueY() + 1);
     filter(zoomSlider);
   });
+}
+
+function loadData() {
+  var bounds = map.getBounds();
+  var ne = bounds.getNorthEast();
+  var sw = bounds.getSouthWest();
+
+  if(request !== null) {
+    request.abort();
+    request = null;
+  }
+
+  $('.loader').show();
+  request = $.get('/info', {
+      'swlat': sw.lat(),
+      'swlon': sw.lng(),
+      'nelat': ne.lat(),
+      'nelon': ne.lng()
+    },
+    function(data) {
+      request = null;
+      var stationIDs = Object.keys(data);
+
+      for (var i = 0; i < stationIDs.length; i++) {
+        var station = data[stationIDs[i]];
+
+        //console.log(station);
+
+        if (station.location.lat && station.location.lon && station.name !== 'FON_ZON_FREE_INTERNET' && station.name.indexOf('apocas') === -1 && station.name.indexOf('Wifi_BE8C') === -1 && station.name !== 'phobos' && station.name !== 'phobos4g' && station.name.indexOf('minedu') ===
+          -1 && station.name.indexOf('eduroam') === -1) {
+          //console.log(station);
+
+          var stationG = new Station(station);
+          stationG.draw();
+
+          if (stationMarkers[station._id] === undefined) {
+            stationMarkers[station._id] = stationG.stationMarker;
+          }
+        }
+      }
+      $('.loader').hide();
+    }
+  );
 }
 
 function resetMap() {
@@ -148,7 +165,7 @@ function filter(zoomSlider) {
 
   for (var i = 0; i < nodeMarkers.length; i++) {
     var n = nodeMarkers[i];
-    if(n.line) {
+    if (n.line) {
       n.line.setMap(null);
     }
     n.nodeMarker.setMap(null);

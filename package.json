@@ -24,6 +24,7 @@
         "colors": "^1.1.2",
         "express": "^4.13.4",
         "gps-distance": "0.0.4",
-        "mongodb": "^2.1.18"
+        "mongodb": "^2.1.18",
+        "body-parser": "^1.15.1"
     }
 }
