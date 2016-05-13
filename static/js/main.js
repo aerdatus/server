@@ -12,7 +12,7 @@ var request = null;
 
 function hideAll(marker) {
   if (station) {
-    resetMap();
+    //resetMap();
     filter();
     return;
   }
@@ -63,8 +63,10 @@ function initialize(mapOptions) {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
   google.maps.event.addListener(map, 'idle', function(e) {
-    loadData();
+    //loadData();
   });
+
+  loadData();
 
   var zoomSlider = new ExtDraggableObject(document.getElementById("zoom"), {
     restrictX: true,
@@ -74,8 +76,6 @@ function initialize(mapOptions) {
     container: document.getElementById("zoomSlider")
   });
   zoomSlider.setValueY(19);
-
-
 
   var dragEndEvent = google.maps.event.addListener(zoomSlider, "drag", function() {
     filter(zoomSlider);
@@ -92,21 +92,26 @@ function initialize(mapOptions) {
 
 function loadData() {
   var bounds = map.getBounds();
-  var ne = bounds.getNorthEast();
-  var sw = bounds.getSouthWest();
+  var opts = {};
 
-  if(request !== null) {
+  if (bounds) {
+    var ne = bounds.getNorthEast();
+    var sw = bounds.getSouthWest();
+    opts = {
+      'swlat': sw.lat(),
+      'swlon': sw.lng(),
+      'nelat': ne.lat(),
+      'nelon': ne.lng()
+    };
+  }
+
+  if (request !== null) {
     request.abort();
     request = null;
   }
 
   $('.loader').show();
-  request = $.get('/info', {
-      'swlat': sw.lat(),
-      'swlon': sw.lng(),
-      'nelat': ne.lat(),
-      'nelon': ne.lng()
-    },
+  request = $.get('/info', opts,
     function(data) {
       request = null;
       var stationIDs = Object.keys(data);
@@ -114,21 +119,20 @@ function loadData() {
       for (var i = 0; i < stationIDs.length; i++) {
         var station = data[stationIDs[i]];
 
-        //console.log(station);
+        var stationG = new Station(station);
+        stationG.draw();
 
-        if (station.location.lat && station.location.lon && station.name !== 'FON_ZON_FREE_INTERNET' && station.name.indexOf('apocas') === -1 && station.name.indexOf('Wifi_BE8C') === -1 && station.name !== 'phobos' && station.name !== 'phobos4g' && station.name.indexOf('minedu') ===
-          -1 && station.name.indexOf('eduroam') === -1) {
-          //console.log(station);
-
-          var stationG = new Station(station);
-          stationG.draw();
-
-          if (stationMarkers[station._id] === undefined) {
-            stationMarkers[station._id] = stationG.stationMarker;
-          }
+        if (stationMarkers[station._id] === undefined) {
+          stationMarkers[station._id] = stationG.stationMarker;
         }
+
       }
       $('.loader').hide();
+      /*
+      if(stationIDs.length > 0) {
+        loadData();
+      }
+      */
     }
   );
 }
@@ -139,9 +143,11 @@ function resetMap() {
 }
 
 function filter(zoomSlider) {
+  /*
   if (station) {
     resetMap();
   }
+  */
 
   if (zoomSlider) {
     var val = 19 - zoomSlider.valueY();
@@ -165,10 +171,7 @@ function filter(zoomSlider) {
 
   for (var i = 0; i < nodeMarkers.length; i++) {
     var n = nodeMarkers[i];
-    if (n.line) {
-      n.line.setMap(null);
-    }
-    n.nodeMarker.setMap(null);
+    n.hide();
   }
   nodeMarkers = [];
 
@@ -177,7 +180,7 @@ function filter(zoomSlider) {
 
 function start() {
   var mapOptions = {
-    zoom: 15,
+    zoom: 8,
     center: new google.maps.LatLng(39.4650609, -8.2048947)
   };
 

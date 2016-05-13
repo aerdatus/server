@@ -19,18 +19,26 @@ var Station = function(station) {
 
 Station.prototype.draw = function() {
   google.maps.event.addListener(this.stationMarker, 'click', function() {
-    hideAll(this);
+    if (this.station.nodes.length > 0 || this.station.clients.length > 0) {
+      hideAll(this);
+    }
   });
 
   google.maps.event.addListener(this.stationMarker, 'mouseover', function() {
-    if (openinfowindow) {
-      openinfowindow.close();
-    }
-    var infowindow = new google.maps.InfoWindow({
-      content: '<b>ID:</b> ' + this.station._id + '</br><b>Name:</b> ' + this.station.name + '</br><b>Firstseen:</b> ' + this.station.firstseen + '</br><b>Lastseen:</b> ' + this.station.lastseen + '</br><b>Power:</b> ' + this.station.power + '</br><b>Devices NA:</b> ' + this.station.nodes.length + '</br><b>Devices A:</b> ' + this.station.clients.length
+    var self = this;
+
+    $.get('/station/' + this.station._id, function(data) {
+      if (openinfowindow) {
+        openinfowindow.close();
+      }
+
+      var infowindow = new google.maps.InfoWindow({
+        content: '<b>ID:</b> ' + data._id + '</br><b>Name:</b> ' + data.name + '</br><b>Vendor:</b> ' + data.vendor + '</br><b>Firstseen:</b> ' + data.firstseen + '</br><b>Lastseen:</b> ' + data.lastseen + '</br><b>Power:</b> ' + data.power + '</br><b>Devices NA:</b> ' + data.nodes.length + '</br><b>Devices A:</b> ' + data.clients.length
+      });
+      infowindow.open(map, self);
+      openinfowindow = infowindow;
     });
-    infowindow.open(map, this);
-    openinfowindow = infowindow;
+
   });
 
   google.maps.event.addListener(this.stationMarker, 'mouseout', function() {

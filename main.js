@@ -5,7 +5,8 @@ var express = require('express'),
   MongoClient = require('mongodb').MongoClient,
   async = require('async'),
   bodyParser = require('body-parser'),
-  url = require('url');
+  url = require('url'),
+  mac = require('mac-lookup');
 
 
 var mongo;
@@ -22,9 +23,19 @@ app.use(bodyParser.json());
 
 var server = require('http').Server(app);
 
-var data = [];
+var cache;
+
 
 app.get('/info', function(req, res) {
+  if (cache === undefined) {
+    populate(function() {
+      res.json(cache);
+    });
+  } else {
+    res.json(cache);
+  }
+
+  /*
   var url_parts = url.parse(req.url, true);
   var dataq = url_parts.query;
 
@@ -57,24 +68,67 @@ app.get('/info', function(req, res) {
       });
     }
   });
+  */
 });
 
+app.get('/station/:mac', function(req, res) {
+  var station = cache[req.params.mac];
+  console.log(station._id);
 
+  mac.lookup(station._id.substring(0,8), function(err, name) {
+    station.vendor = name || 'Unknown';
+    res.json(station);
+  });
+});
 
 
 MongoClient.connect('mongodb://127.0.0.1:27017/probe', function(err, db) {
   mongo = db;
   server.listen(port);
+
+  console.log('########################');
+  console.log('Proby');
+  console.log('########################');
+  console.log('Server started!');
+  console.log('Listening on port: ' + port);
+  console.log('----');
   console.log('Connected to database');
+
+  populate();
+  setInterval(function() {
+    populate();
+  }, 240000);
 });
 
 
-console.log('########################');
-console.log('Proby');
-console.log('########################');
-console.log('Server started!');
-console.log('Listening on port: ' + port);
-console.log('----');
+function populate(mcallback) {
+  var data = [];
+  var response = {};
+  mongo.collection('stations').find({}).each(function(err, doc) {
+    if (doc) {
+      data.push(doc);
+    } else {
+      async.map(data, function(doci, callback) {
+        compute(doci, function(station) {
+          if (station) {
+            //ToDo: blacklist will be filtered at import phase
+            if (station.location.lat && station.location.lon && station.name !== 'FON_ZON_FREE_INTERNET' && station.name.indexOf('apocas') === -1 && station.name.indexOf('Wifi_BE8C') === -1 && station.name !== 'phobos' && station.name !== 'phobos4g' && station.name.indexOf('minedu') ===
+              -1 && station.name.indexOf('eduroam') === -1) {
+              response[station._id] = station;
+            }
+          }
+          callback();
+        });
+      }, function(err, results) {
+        cache = response;
+        console.log('Cache populated.');
+        if (mcallback) {
+          mcallback();
+        }
+      });
+    }
+  });
+}
 
 
 function compute(station, callback) {
@@ -139,23 +193,4 @@ function findNodes(station, callback) {
       });
     }
   });
-
-
-  /*
-  var nodesKeys = Object.keys(data.nodes);
-
-  for (var i = 0; i < nodesKeys.length; i++) {
-    var node = data.nodes[nodesKeys[i]];
-    node.id = nodesKeys[i];
-    if (node.associated && node.associated.indexOf(station.id) >= 0) {
-      outputassoc.push(node);
-    } else if (node.probes.indexOf(station.name) >= 0) {
-      outputnotassoc.push(node);
-    }
-  }
-  return {
-    'associated': outputassoc,
-    'notassociated': outputnotassoc
-  };
-  */
 }
