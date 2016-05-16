@@ -28,15 +28,6 @@ function hideAll(marker) {
 
   var stationo = marker.station;
 
-  for (var y = 0; y < stationo.nodes.length; y++) {
-    var node = stationo.nodes[y];
-    if (node.location.lat && node.location.lon) {
-      var nodeG = new Node(node, './images/pcred.png', marker);
-      nodeG.draw();
-      nodeMarkers.push(nodeG);
-    }
-  }
-
   for (var z = 0; z < stationo.clients.length; z++) {
     var node = stationo.clients[z];
     if (node.location.lat && node.location.lon) {
@@ -162,7 +153,7 @@ function filter(zoomSlider) {
   var stationKeys = Object.keys(stationMarkers);
   for (var i = 0; i < stationKeys.length; i++) {
     var sm = stationMarkers[stationKeys[i]];
-    if ((sm.station.clients.length + sm.station.nodes.length) >= valFilter) {
+    if (sm.station.clients.length >= valFilter) {
       sm.setVisible(true);
     } else {
       sm.setVisible(false);

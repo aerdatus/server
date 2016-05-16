@@ -73,11 +73,20 @@ app.get('/info', function(req, res) {
 
 app.get('/station/:mac', function(req, res) {
   var station = cache[req.params.mac];
-  console.log(station._id);
 
   mac.lookup(station._id.substring(0,8), function(err, name) {
     station.vendor = name || 'Unknown';
     res.json(station);
+  });
+});
+
+app.get('/node/:mac', function(req, res) {
+  mongo.collection('nodes').findOne({'_id': req.params.mac}).each(function(err, doc) {
+    if (doc) {
+      res.json(station);
+    } else {
+      res.json({});
+    }
   });
 });
 
