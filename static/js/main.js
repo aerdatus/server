@@ -6,9 +6,16 @@ var nodeMarkers = [];
 var circleMarkers = [];
 var lines = [];
 var valFilter = 0;
-var openinfowindow;
+var openinfowindow = [];
 var bounds;
 var request = null;
+
+function closePopups() {
+  for (var i = 0; i < openinfowindow.length; i++) {
+    openinfowindow[i].close();
+  }
+  openinfowindow = [];
+}
 
 function hideAll(marker) {
   if (station) {

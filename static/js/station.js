@@ -28,23 +28,19 @@ Station.prototype.draw = function() {
     var self = this;
 
     $.get('/station/' + this.station._id, function(data) {
-      if (openinfowindow) {
-        openinfowindow.close();
-      }
+      closePopups();
 
       var infowindow = new google.maps.InfoWindow({
         content: '<b>ID:</b> ' + data._id + '</br><b>Name:</b> ' + data.name + '</br><b>Vendor:</b> ' + data.vendor + '</br><b>Firstseen:</b> ' + data.firstseen + '</br><b>Lastseen:</b> ' + data.lastseen + '</br><b>Power:</b> ' + data.power + '</br><b>Devices NA:</b> ' + data.nodes.length + '</br><b>Devices A:</b> ' + data.clients.length
       });
       infowindow.open(map, self);
-      openinfowindow = infowindow;
+      openinfowindow.push(infowindow);
     });
 
   });
 
   google.maps.event.addListener(this.stationMarker, 'mouseout', function() {
-    if (openinfowindow) {
-      openinfowindow.close();
-    }
+    closePopups();
   });
 };
 

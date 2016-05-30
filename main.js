@@ -81,9 +81,9 @@ app.get('/station/:mac', function(req, res) {
 });
 
 app.get('/node/:mac', function(req, res) {
-  mongo.collection('nodes').findOne({'_id': req.params.mac}).each(function(err, doc) {
+  mongo.collection('nodes').findOne({'_id': req.params.mac}, function(err, doc) {
     if (doc) {
-      res.json(station);
+      res.json(doc);
     } else {
       res.json({});
     }
